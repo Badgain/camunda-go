@@ -386,6 +386,25 @@ type QueryProcessInstanceVariableBy struct {
 	VariableName *string
 }
 
+type ReqMessageAsync struct {
+	MessageName        *string              `json:"messageName,omitempty"`
+	ProcessInstanceIds *[]string            `json:"processInstanceIds,omitempty"`
+	Variables          *map[string]Variable `json:"variables,omitempty"`
+}
+
+type MessageAsyncResponse struct {
+	Id                     string `json:"id"`
+	Type                   string `json:"type"`
+	TotalJobs              int    `json:"totalJobs"`
+	BatchJobsPerSeed       int    `json:"batchJobsPerSeed"`
+	InvocationsPerBatchJob int    `json:"invocationsPerBatchJob"`
+	SeedJobDefinitionId    string `json:"seedJobDefinitionId"`
+	MonitorJobDefinitionId string `json:"monitorJobDefinitionId"`
+	BatchJobDefinitionId   string `json:"batchJobDefinitionId"`
+	TenantId               string `json:"tenantId"`
+	Suspended              bool   `json:"suspended"`
+}
+
 // String a build path part
 func (q *QueryProcessInstanceVariableBy) String() string {
 	if q.Id != nil && q.VariableName != nil {
@@ -665,5 +684,16 @@ func (p *ProcessInstance) ActivateSuspendInGroupAsync(req ReqProcessInstanceActi
 	}
 
 	err = p.client.readJsonResponse(res, batch)
+	return
+}
+
+func (p *ProcessInstance) SendMessageAsync(req *ReqMessageAsync) (asyncResponse *MessageAsyncResponse, err error) {
+	asyncResponse = &MessageAsyncResponse{}
+	res, err := p.client.doPostJson("/process-instance/message-async", nil, req)
+	if err != nil {
+		return
+	}
+
+	err = p.client.readJsonResponse(res, asyncResponse)
 	return
 }

@@ -1,5 +1,7 @@
 package processor
 
+import camunda_client_go "github.com/Badgain/camunda-go/v3"
+
 // QueryComplete a query for Complete request
 type QueryComplete struct {
 	// A JSON object containing variable key-value pairs
